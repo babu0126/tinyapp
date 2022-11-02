@@ -38,15 +38,17 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
- app.get("/u/:id", (req, res) => {
-  // const longURL = ...
+ app.get("/u/:id", (req, res) => {S
   res.redirect(longURL);
 });
 
+app.post('/urls/:id', (req, res) => {
+  urlDatabase[req.params.id] = req.body.newURL
+  
+  res.redirect('/urls')
+});
+
+//DELETE
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
