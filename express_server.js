@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -7,16 +8,21 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.use(express.urlencoded({ extended: true }));
+const users = {};
 
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.set('view engine', 'ejs');
 
+
+// HOMEPAGE -> Redirect to /urls
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect('/urls')
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = {urls: urlDatabase};
+  const templateVars = {urls: urlDatabase,
+  username: req.cookies.userName};
   res.render("urls_index", templateVars);
 });
 
@@ -30,21 +36,29 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: 'http://www.lighthouselabs.ca'};
+  const templateVars = { id: req.params.id, longURL: 'http://www.lighthouselabs.ca', username: req.cookies[username]};
+  console.log(templateVars);
   res.render("urls_show", templateVars);
 });
 
+
+// Temporary endpoint to visually view the current urlDatabase
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+// Temporary endpoint to visually view the current users
+app.get("/urls", (req, res) => {
+  res.json(users);
+})
 
- app.get("/u/:id", (req, res) => {S
-  res.redirect(longURL);
+
+
+// EDIT
+app.get("/u/:id", (req, res) => {S
+ res.redirect(longURL);
 });
-
 app.post('/urls/:id', (req, res) => {
   urlDatabase[req.params.id] = req.body.newURL
-  
   res.redirect('/urls')
 });
 
@@ -52,8 +66,24 @@ app.post('/urls/:id', (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
-})
+});
 
+//LOGIN
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+app.post('/login', (req, res) => {
+  console.log(req.body);
+  if (req.body.username) {
+    res.cookie('userName', req.body.username)
+    res.redirect('/urls')
+  }
+});
+//LOGOUT
+app.post('/logout', (req, res) => {
+  res.clearCookie('userName');
+  res.redirect('/urls')
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
