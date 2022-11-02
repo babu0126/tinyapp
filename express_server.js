@@ -36,7 +36,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: 'http://www.lighthouselabs.ca', username: req.cookies[username]};
+  const templateVars = { id: req.params.id, longURL: 'http://www.lighthouselabs.ca', username: req.cookies.userName};
   console.log(templateVars);
   res.render("urls_show", templateVars);
 });
@@ -66,6 +66,18 @@ app.post('/urls/:id', (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
+});
+
+//REGISTER
+app.get('/register', (req, res) => {
+  const templateVars = {username: req.cookies.userName
+  };
+  res.render('register', templateVars)
+});
+
+app.post('/register', (req, res) => {
+  const inputEmail = req.body.email;
+  const inputPass = req.body.password;
 });
 
 //LOGIN
