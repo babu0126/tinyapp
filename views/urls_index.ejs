@@ -3,8 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
     <!-- Bootstrap CSS -->
@@ -30,26 +29,32 @@
           </tr>
         </thead>
         <tbody>
-          <% for (let id in urls) { %>
-            <tr>
-              <td><%= id %></td>
-              <td><%= urls[id] %></td>
-              <td>
-                <a href="/urls/<%= id %>">
-                  <button type="button" class="btn btn-outline-primary">Edit</button>
-                </a>
-              </td>
-              <td>
-                <form method="POST" action="/urls/9sm5xK/delete">
-                  <button type="submit" class="btn btn-outline-danger">Delete
-                  </button>
-                </form>
-              </td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </main>
+          <% if (!user) { %>
+            <div class="alert alert-warning" role="alert">
+              Please <a href="/login" class="alert-link"> Login </a>
+               or <a href="/register" class="alert-link"> Register </a>
+            </div>
+            <% } else { %>
+              <% for (let shortURL in urls) { %>
+                <tr>
+                  <td><%= shortURL %></td>
+                  <td><%= urls[shortURL] %></td>
+                  <td>
+                    <form method="GET" action="/urls/<%= shortURL %>">
+                      <button type="submit" class="btn btn-outline-danger">Edit</button>
+                    </form>
+                  </td>
+                  <td>
+                    <form method="POST" action="/urls/<%= shortURL %>/delete">
+                      <button type="submit" class="btn btn-outline-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+              <% } %>
+            <% } %>
+            </tbody>
+          </table>
+        </main>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
