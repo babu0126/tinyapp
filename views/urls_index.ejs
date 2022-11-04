@@ -3,8 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
 
     <!-- Bootstrap CSS -->
@@ -35,14 +34,13 @@
               <td><%= id %></td>
               <td><%= urls[id] %></td>
               <td>
-                <a href="/urls/<%= id %>">
-                  <button type="button" class="btn btn-outline-primary">Edit</button>
-                </a>
+                <form method="GET" action="/urls/<%= id %>">
+                  <button type="submit" class="btn btn-outline-danger">Edit</button>
+                </form>
               </td>
               <td>
-                <form method="POST" action="/urls/9sm5xK/delete">
-                  <button type="submit" class="btn btn-outline-danger">Delete
-                  </button>
+                <form method="POST" action="/urls/<%= id %>/delete">
+                  <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>
             </tr>
