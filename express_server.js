@@ -22,18 +22,18 @@ const urlDatabase = {
 const users = {
   userRandomID: {
     id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    email: "a@a.com",
+    password: bcrypt.hashSync("123", 10)
   },
   user2RandomID: {
     id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
+    email: "a@b.com",
+    password: bcrypt.hashSync("123", 10)
   },
   user3RandomID: {
     id: "user3RandomID",
-    email: "a@b.com",
-    password: "123",
+    email: "a@c.com",
+    password: bcrypt.hashSync("123", 10)
   },
   
 };
@@ -207,11 +207,11 @@ app.post('/login', (req, res) => {
     res.status(403).send("There is no account associated with the e-mail");
   } else  {
     const userID = getUserByEmail(inputEmail, users);
-    if (password !== users[userID].password) {
-      res.status(403).send("The password is incorrect!");
-    } else {
+    if (bcrypt.compareSync(password, users[userID].password)) {
       res.cookie('user_id', userID);
       res.redirect('/urls');
+    } else {
+      res.status(403).send("The password is incorrect!");
     }
   }
 });
@@ -235,7 +235,7 @@ app.post('/register', (req, res) => {
     users[user] = {
       id: user,
       email: inputEmail,
-      password: inputPassword,
+      password: bcrypt.hashSync(inputPassword, 10),
     };
     res.cookie('user_id', user);
     res.redirect('/urls');
