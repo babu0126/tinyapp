@@ -69,7 +69,7 @@ app.get('/urls', (req, res) => {
 
 // URLS_NEW
 app.get('/urls/new', (req, res) => {
-  if (getUserByUserID(req.session.user_id, users)) {
+  if (!getUserByUserID(req.session.user_id, users)) {
     res.redirect('/urls');
   } else {
     const templateVars = {
