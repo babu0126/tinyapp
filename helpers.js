@@ -16,8 +16,8 @@ const getUserByUserID = function (userIDs, userDatabase) {
     if (userIDs === userid) {
       return true;
     }
-    return false;
   }
+  return false;
 };
 
 const urlsForUser = function (userIDs, urlDatabase) {
@@ -25,6 +25,8 @@ const urlsForUser = function (userIDs, urlDatabase) {
   for (const shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userID === userIDs) {
       userUrl[shortURL] = urlDatabase[shortURL].longURL;
+    } else if ( userIDs === '') {
+      return null;
     }
   }
   return userUrl;
