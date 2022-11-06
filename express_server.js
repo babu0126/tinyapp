@@ -44,9 +44,6 @@ app.use(cookieSession({
   keys: ['lighthouse'],
 }));
 
-app.listen(PORT, (req, res) => {
-  console.log(`The Server is listening on PORT ${PORT}`);
-})
 
 /******************************************************************************/
 
@@ -73,7 +70,7 @@ app.get('/urls/new', (req, res) => {
     res.redirect('/urls');
   } else {
     const templateVars = {
-    user: users[req.session.user_id]
+      user: users[req.session.user_id]
     };
     res.render('urls_new', templateVars);
   }
@@ -81,30 +78,36 @@ app.get('/urls/new', (req, res) => {
 
 // URLS_SHOW
 app.get('/urls/:shortURL', (req, res) => {
-  if (urlDatabase[req.params.shortURL]) {
-    let templateVars = {
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL].longURL,
-      userID: urlDatabase[req.params.shortURL].userID,
-      user: users[req.session.user_id]
-  };
-  res.render('urls_show', templateVars);
-} else {
-  res.status(404).send('The short URL does not match with the long URL')
-}
+  const userId = req.session.user_id;
+  let templateVars  = {};
+  if (!userId) {
+    templateVars = null;
+    res.status(400).send("Please logged in to access!");
+  } else {
+    const userURLs = urlsForUser(userId, urlDatabase);
+    const shortURL = req.params.shortURL;
+    if (userURLs[shortURL]) {
+      const longURL = urlDatabase[shortURL].longURL;
+      templateVars.user = users[userId];
+      templateVars.longURL = longURL;
+      templateVars.shortURL = shortURL;
+    } else {
+      templateVars.user = users[userId];
+      templateVars.shortURL = null;
+      res.status(304).send("The short URL does not match!");
+    } 
+  }
+  res.render("urls_show", templateVars);
 });
 
 // Directing to the longURL
 app.get("/u/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL]) {
-    const longURL = urlDatabase[req.params.shortURL];
-    if (longURL === undefined) {
-      res.status(302).send('The longURL is not defined!');
-    } else {
-      res.redirect(longURL);
-    }
+  const shorturl = req.params.shortURL;
+  if (urlDatabase[shorturl]) {
+    const longurl = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longurl);
   } else {
-    res.status(404).send('The shortURL does not exist!')
+    res.status(404).send('The shortURL does not exist!');
   }
 });
 
@@ -114,9 +117,9 @@ app.get('/register', (req, res) => {
     res.redirect('/urls');
   } else {
     const templateVars = {
-    user: req.session.user_id
+      user: req.session.user_id
     };
-  res.render('urls_register',templateVars);
+    res.render('urls_register',templateVars);
   }
 });
 
@@ -125,8 +128,8 @@ app.get('/login', (req, res) => {
   if (getUserByUserID(req.session.user_id, users)) {
     res.redirect('/urls');
   } else {
-  const templateVars = {
-    user: users[req.session.user_id]
+    const templateVars = {
+      user: users[req.session.user_id]
     };
     res.render('urls_login', templateVars);
   }
@@ -213,3 +216,7 @@ app.post('/register', (req, res) => {
     res.redirect('/urls');
   }
 });
+
+app.listen(PORT, (req, res) => {
+  console.log(`The Server is listening on PORT ${PORT}`);
+})
